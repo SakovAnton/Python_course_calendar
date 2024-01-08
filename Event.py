@@ -33,8 +33,8 @@ class Event:
 
     # _repeat = {'single': 1, 'every_day': 0, 'every_week': 0, 'every_month': 0}
 
-    def __init__(self, title='Заглушка 1', time_start=dt.datetime(1, 1, 1), time_end=dt.datetime(1, 1, 1),
-                 description='NONE', participants=set(), organizer='Nikola Tesla', repeat='single'):
+    def __init__(self, title=' ', time_start=None, time_end=None,
+                 description=None, participants=set(), organizer='Nikola Tesla', repeat='single'):
         self._id = self.__class__.__id_counter__
         self.__class__.__id_counter__ += 1
 
@@ -59,6 +59,7 @@ class Event:
                f'Время окончания: {self._time_end}\n' \
                f'Организатор: {self._organizer}\n' \
                f'Участники: {self._participants}'
+
     def __repr__(self):
         return f'Название: {self._title}\n'
 
@@ -85,6 +86,3 @@ class Event:
 
     def get_repeat(self):
         return self._repeat
-
-
-
