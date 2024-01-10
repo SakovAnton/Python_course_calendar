@@ -40,6 +40,9 @@ class Calendar:
             if isinstance(event, Event) or issubclass(type(event), Event):
                 self._events.remove(event)
 
+
+
+
     def find_all_events_at_time(self, time_start, time_end):
 
         found_events = []
@@ -65,8 +68,11 @@ class Calendar:
                 print(i)
 
                 if t_start <= dt.datetime.strptime(event.get_time_start(), '%Y-%m-%d %H:%M:%S') <= t_end:
+
+                    #event = event.copy_event_dif_time(time=event.get_time_start())
+
                     print(t_start - dt.timedelta(days=1) + i*delta_time)
-                    found_events.append(event)
+                    found_events.append(event.copy_event_dif_time(time=event.get_time_start()))
 
 
             # for time in range(int(t_start-dt.timedelta(days=1)), int(t_end+dt.timedelta(days=1)), int(delta_time)):

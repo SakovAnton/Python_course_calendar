@@ -86,3 +86,12 @@ class Event:
 
     def get_repeat(self):
         return self._repeat
+
+    def copy_event_dif_time(self, time):
+
+        time_end = dt.datetime.strptime(time, '%Y-%m-%d %H:%M:%S') + (
+                dt.datetime.strptime(self.get_time_end(), '%Y-%m-%d %H:%M:%S') - dt.datetime.strptime(
+            self.get_time_start(), '%Y-%m-%d %H:%M:%S'))
+
+        return Event(title=self.get_title(), time_start=time, time_end=time_end, description=self.get_description(),
+                     participants=self.get_participants(), organizer=self.get_organizer(), repeat=self.get_repeat())
