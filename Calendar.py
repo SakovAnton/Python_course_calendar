@@ -40,9 +40,6 @@ class Calendar:
             if isinstance(event, Event) or issubclass(type(event), Event):
                 self._events.remove(event)
 
-
-
-
     def find_all_events_at_time(self, time_start, time_end):
 
         found_events = []
@@ -52,32 +49,38 @@ class Calendar:
         i = 0
         delta_time = dt.timedelta(microseconds=1)
 
-        for event in self._events:
+        for event in self.get_events():
             if event.get_repeat() == 'day':
                 delta_time = dt.timedelta(days=1)
             if event.get_repeat() == 'week':
                 delta_time = dt.timedelta(weeks=1)
             if event.get_repeat() == 'single':
                 delta_time = dt.timedelta(microseconds=1)
-
+            print(f'Заходы в цикл self.get_events() {event}')
             # time = t_start - dt.timedelta(days=1)
             # t_start = t_start - dt.timedelta(days=1)
-            while (t_start - dt.timedelta(days=1) + i*delta_time) < t_end:
-                #time = t_start - dt.timedelta(days=1) + i*delta_time
+            while (t_start - dt.timedelta(days=1) + i * delta_time) < t_end:
+                # time = t_start - dt.timedelta(days=1) + i*delta_time
                 i = i + 1
                 print(i)
 
-                if t_start <= dt.datetime.strptime(event.get_time_start(), '%Y-%m-%d %H:%M:%S') <= t_end:
+                time_2 = dt.datetime.strptime(event.get_time_start(), '%Y-%m-%d %H:%M:%S')
+                print(f"time_2: {time_2}\n")
 
-                    #event = event.copy_event_dif_time(time=event.get_time_start())
+                if t_start <= time_2 <= t_end:
+                    # event = event.copy_event_dif_time(time=event.get_time_start())
 
-                    print(t_start - dt.timedelta(days=1) + i*delta_time)
+                    print(f'Заходим в if по времени: {t_start - dt.timedelta(days=1) + i * delta_time}\n')
+                    print(f't_start: {t_start}\n')
+                    print(f't_end: {t_end}\n')
+                    time_2 = dt.datetime.strptime(event.get_time_start(), '%Y-%m-%d %H:%M:%S')
+
+                    print(f"dt.datetime.strptime(event.get_time_start(): {time_2}\n")
                     found_events.append(event.copy_event_dif_time(time=event.get_time_start()))
 
-
-            # for time in range(int(t_start-dt.timedelta(days=1)), int(t_end+dt.timedelta(days=1)), int(delta_time)):
-            #     if t_start <= time <= t_end:
-            #        found_events.append(event)
+                    # for time in range(int(t_start-dt.timedelta(days=1)), int(t_end+dt.timedelta(days=1)), int(delta_time)):
+                    #     if t_start <= time <= t_end:
+                    #        found_events.append(event)
 
         return found_events
 

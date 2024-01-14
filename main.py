@@ -4,27 +4,29 @@ from Calendar import Calendar
 
 if __name__ == "__main__":
     event1 = Event(title='Event_1', time_start='2023-12-22 15:15:01', time_end='2023-12-22 19:15:01',
-                   participants={'Vasya', 'Petr', 'Nik'}, repeat='day')
-    event2 = Event(title='Event_2', time_start='2023-12-23 15:15:01', time_end='2023-12-22 19:15:01',
-                   participants={'Vasya', 'Petr', 'Nik'}, repeat='day')
-    event3 = Event(title='Event_3', time_start='2023-12-24 15:15:01', time_end='2023-12-24 19:15:01',
-                   participants={'Vasya', 'Petr', 'Nik'}, repeat='day')
+                   participants={'Vasya', 'Petr', 'Nik'}, repeat='week')
+    event2 = Event(title='Event_2', time_start='2023-12-23 15:16:01', time_end='2023-12-22 19:15:01',
+                   participants={'Vasya', 'Petr', 'Nik'}, repeat='week')
+    event3 = Event(title='Event_3', time_start='2023-12-24 15:17:01', time_end='2023-12-24 19:15:01',
+                   participants={'Vasya', 'Petr', 'Nik'}, repeat='week')
 
     #    print(event1)
-    event4 = event3.copy_event_dif_time(time='2023-12-25 15:15:01')
+    event4 = event3.copy_event_dif_time(time='2023-12-25 15:18:01')
 
     print(type(event4.get_time_start()))
 
     cal_Anton = Calendar('Anton')
     cal_Anton.add_events(event1, event2, event3, event3)
 
+    print(f'cal_Anton: {cal_Anton.get_events()}')
+
     # cal_test2 = Calendar('G')
-    cal_test2 = cal_Anton.find_all_events_at_time('2023-12-22 15:15:01', '2023-12-24 15:15:01')
+    cal_test2 = cal_Anton.find_all_events_at_time('2023-12-22 15:15:01', '2023-12-25 15:15:01')
 
     # print(event3)
     # print(event4)
 
-    print(f'Found events: {cal_test2}')
+    print(f'Found events: \n {cal_test2}')
     print(f'Calendar(Anton): {cal_Anton}')
 
     # cal_Anton.del_events(event1)
