@@ -8,24 +8,75 @@
 from Event import Event
 import datetime as dt
 import json
+import uuid
 import os
 
 
 class Calendar:
-    _instance = None
-    _events = []
-    _owner = ''
-
-    # def __new__(cls, *args, **kwargs):
-    #     if cls._instance is None:
-    #         cls._instance = super().__new__(cls)
-    #     return cls._instance
+    # _instance = None
+    #    _events = []
+    # _owner = ''
+    _events_user = dict()
 
     def __init__(self, owner):
         self._owner = owner
+        self._events = []
+        # self._events_user = dict()
+
+    def create_event(self, title='', time_start=None, time_end=None, description=None,
+                     participants=None, organizer=None, repeat='single'):
+
+        organizer = self.get_owner()
+
+        _id = str(uuid.uuid4())
+
+        if time_start:
+            # self._events_user[_id] = [title, organizer, time_start, time_end, description, participants, repeat]
+
+            event = Event(iid=_id, title=title, time_start=time_start, time_end=time_end, description=description,
+                          participants=participants, organizer=organizer, repeat=repeat)
+
+            self._events_user[_id] = [event]
+
+            self.add_events(event)
+        else:
+            print('Не хватает данных для создания события!')
+
+    def get_event_id(self, iid):
+        event = self._events_user[iid]
+        return event
+
+    def change_event(self, iid, new_title=None, new_time_start=None, new_time_end=None, new_description=None,
+                     new_participants=None, new_repeat=None):
+
+        event = self._events_user[iid][0]
+
+        if new_title:
+            event.set_title(new_title)
+        if new_time_start:
+            event.set_time_start(new_time_start)
+        if new_time_end:
+            event.set_time_end(new_time_end)
+        if new_description:
+            event.set_description(new_description)
+        if new_participants:
+            event.set_participants(new_participants)
+        if new_repeat:
+            event.set_repeat(new_repeat)
+
+    def delete_event_id(self, iid):
+        del (self._events_user[iid][0])
 
     def get_events(self):
         return self._events
+
+    def get_events_user(self, owner):
+        found_events = []
+        for event in self.get_events():
+            if event.get_organizer() == owner:
+                found_events.append(event)
+
+        return found_events
 
     def get_owner(self):
         return self._owner
@@ -46,42 +97,26 @@ class Calendar:
         t_start = dt.datetime.strptime(time_start, '%Y-%m-%d %H:%M:%S')
         t_end = dt.datetime.strptime(time_end, '%Y-%m-%d %H:%M:%S')
 
-        i = 0
-        delta_time = dt.timedelta(microseconds=1)
+        delta_time = dt.timedelta(microseconds=0)
 
-        for event in self.get_events():
+        for event in self.get_events_user(self.get_owner()):
+
             if event.get_repeat() == 'day':
                 delta_time = dt.timedelta(days=1)
             if event.get_repeat() == 'week':
                 delta_time = dt.timedelta(weeks=1)
+            if event.get_repeat() == 'month':
+                delta_time = dt.timedelta(weeks=1)
+            if event.get_repeat() == 'year':
+                delta_time = dt.timedelta(weeks=1) * 52
             if event.get_repeat() == 'single':
-                delta_time = dt.timedelta(microseconds=1)
-            print(f'Заходы в цикл self.get_events() {event}')
-            # time = t_start - dt.timedelta(days=1)
-            # t_start = t_start - dt.timedelta(days=1)
-            while (t_start - dt.timedelta(days=1) + i * delta_time) < t_end:
-                # time = t_start - dt.timedelta(days=1) + i*delta_time
-                i = i + 1
-                print(i)
-
-                time_2 = dt.datetime.strptime(event.get_time_start(), '%Y-%m-%d %H:%M:%S')
-                print(f"time_2: {time_2}\n")
-
+                delta_time = dt.timedelta(days=36500)
+            i = 0
+            while (t_start + i * delta_time) <= t_end:
+                time_2 = dt.datetime.strptime(event.get_time_start(), '%Y-%m-%d %H:%M:%S') + i * delta_time
                 if t_start <= time_2 <= t_end:
-                    # event = event.copy_event_dif_time(time=event.get_time_start())
-
-                    print(f'Заходим в if по времени: {t_start - dt.timedelta(days=1) + i * delta_time}\n')
-                    print(f't_start: {t_start}\n')
-                    print(f't_end: {t_end}\n')
-                    time_2 = dt.datetime.strptime(event.get_time_start(), '%Y-%m-%d %H:%M:%S')
-
-                    print(f"dt.datetime.strptime(event.get_time_start(): {time_2}\n")
-                    found_events.append(event.copy_event_dif_time(time=event.get_time_start()))
-
-                    # for time in range(int(t_start-dt.timedelta(days=1)), int(t_end+dt.timedelta(days=1)), int(delta_time)):
-                    #     if t_start <= time <= t_end:
-                    #        found_events.append(event)
-
+                    found_events.append(event.copy_event_dif_time(time=time_2.strftime('%Y-%m-%d %H:%M:%S')))
+                i = i + 1
         return found_events
 
     def save_to_json(self):
@@ -100,26 +135,40 @@ class Calendar:
                     'Participants': [participant for participant in event.get_participants()],
                     'Description': event.get_description()
 
-                } for event in self.get_events()
+                } for event in self.get_events_user(self.get_owner())
             ]
         }
 
         print(to_json)
-        with open(f"{self._owner}'s events at {dt.datetime.now().date()}.json", 'w') as f:
+        with open(f"Calendars\\{self._owner}_{dt.datetime.now().date()}.json", 'w') as f:
             f.write(json.dumps(to_json))
 
-    @staticmethod
-    def read_from_json(file):
+    # @staticmethod
+    def read_from_json(self, file):
+
+        # Нужно посмотреть, что сделать create_event
+        # create_event(self, title='', time_start=None, time_end=None, description=None,
+        #            participants=None, organizer=None, repeat='single'):
 
         with open(file, 'r') as f:
             json_string = json.loads(f.read())
-        cal = Calendar(json_string['DATE'])
+        # cal = Calendar(json_string['DATE'])
         for event in json_string['EVENT']:
-            cal.add_events(Event(title=event['Title'],
-                                 time_start=event['Time_start'],
-                                 time_end=event['Time_end'],
-                                 description=event['Description'],
-                                 organizer=event['Organizer'],
-                                 repeat=event['Repeat'],
-                                 # participants=event[part for part in json_string['Participants']]
-                                 ))
+            # self.change_event(iid,
+            #                   new_title=event['Title'],
+            #                   new_time_start=event['Time_start'],
+            #                   new_time_end=event['Time_end'],
+            #                   new_description=event['Description'],
+            #                   new_participants=event['Participants'],
+            #                   new_repeat=event['Repeat']
+            #                   )
+
+            self._id = event['id']
+            self.create_event(title=event['Title'],
+                              time_start=event['Time_start'],
+                              time_end=event['Time_end'],
+                              description=event['Description'],
+                              organizer=event['Organizer'],
+                              repeat=event['Repeat'],
+                              participants=event['Participants']
+                              )
