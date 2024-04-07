@@ -15,19 +15,14 @@
 Комментарии на нетривиальных методах и в целом документация
 """
 
-# Push TEST
 
 import datetime as dt
-import json
-import uuid
 
 
 class Event:
     _id = 0
     _title = ''
     __id_counter__ = 0
-    # _time_start = dt.datetime()
-    # _time_end = dt.datetime()
     _description = None
     _participants = set()
     _organizer = ''

@@ -9,19 +9,15 @@ from Event import Event
 import datetime as dt
 import json
 import uuid
-import os
 
 
 class Calendar:
-    # _instance = None
-    #    _events = []
-    # _owner = ''
+
     _events_user = dict()
 
     def __init__(self, owner):
         self._owner = owner
         self._events = []
-        # self._events_user = dict()
 
     def create_event(self, title='', time_start=None, time_end=None, description=None,
                      participants=None, organizer=None, repeat='single'):
@@ -31,7 +27,6 @@ class Calendar:
         _id = str(uuid.uuid4())
 
         if time_start:
-            # self._events_user[_id] = [title, organizer, time_start, time_end, description, participants, repeat]
 
             event = Event(iid=_id, title=title, time_start=time_start, time_end=time_end, description=description,
                           participants=participants, organizer=organizer, repeat=repeat)
@@ -91,7 +86,7 @@ class Calendar:
             if isinstance(event, Event) or issubclass(type(event), Event):
                 self._events.remove(event)
 
-    def find_all_events_at_time(self, time_start, time_end):
+    def find_all_events_at_time(self, owner, time_start, time_end):
 
         found_events = []
         t_start = dt.datetime.strptime(time_start, '%Y-%m-%d %H:%M:%S')
@@ -99,7 +94,7 @@ class Calendar:
 
         delta_time = dt.timedelta(microseconds=0)
 
-        for event in self.get_events_user(self.get_owner()):
+        for event in self.get_events_user(owner):
 
             if event.get_repeat() == 'day':
                 delta_time = dt.timedelta(days=1)
@@ -146,29 +141,29 @@ class Calendar:
     # @staticmethod
     def read_from_json(self, file):
 
-        # Нужно посмотреть, что сделать create_event
-        # create_event(self, title='', time_start=None, time_end=None, description=None,
-        #            participants=None, organizer=None, repeat='single'):
 
-        with open(file, 'r') as f:
-            json_string = json.loads(f.read())
-        # cal = Calendar(json_string['DATE'])
-        for event in json_string['EVENT']:
-            # self.change_event(iid,
-            #                   new_title=event['Title'],
-            #                   new_time_start=event['Time_start'],
-            #                   new_time_end=event['Time_end'],
-            #                   new_description=event['Description'],
-            #                   new_participants=event['Participants'],
-            #                   new_repeat=event['Repeat']
-            #                   )
+        try:
+            with open(file, 'r') as f:
+                json_string = json.loads(f.read())
 
-            self._id = event['id']
-            self.create_event(title=event['Title'],
-                              time_start=event['Time_start'],
-                              time_end=event['Time_end'],
-                              description=event['Description'],
-                              organizer=event['Organizer'],
-                              repeat=event['Repeat'],
-                              participants=event['Participants']
-                              )
+            for event in json_string['EVENT']:
+                # self.change_event(iid,
+                #                   new_title=event['Title'],
+                #                   new_time_start=event['Time_start'],
+                #                   new_time_end=event['Time_end'],
+                #                   new_description=event['Description'],
+                #                   new_participants=event['Participants'],
+                #                   new_repeat=event['Repeat']
+                #                   )
+
+                self._id = event['id']
+                self.create_event(title=event['Title'],
+                                  time_start=event['Time_start'],
+                                  time_end=event['Time_end'],
+                                  description=event['Description'],
+                                  organizer=event['Organizer'],
+                                  repeat=event['Repeat'],
+                                  participants=event['Participants']
+                                  )
+        except:
+            print('Пока мероприятий нет у вас, создайте первое мероприятие.')

@@ -11,12 +11,8 @@ import csv
 import re
 
 from Backend import Backend
-from Event import Event
 from Calendar import Calendar
-from User import User
 import datetime as dt
-import msvcrt
-
 
 class Interface:
     state = 'start'
@@ -191,8 +187,19 @@ class Interface:
     def print_user_between_date_events():
         # print(f'Текущий календарь: {Interface._current_cal}')
 
-        events_all = Interface._current_cal.get_events_user(Interface._current_user)
-        print(f'Текущий юзер: {Interface._current_user}')
+        pattern_date = r'^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}'
+        time_start = '  '
+        time_end = '  '
+
+        while re.match(pattern_date, time_start) == None:
+            time_start = input('Введите время начала поиска событий (YY-MM-dd h:m:s): ')
+
+        while re.match(pattern_date, time_end) == None:
+            time_end = input('Введите время окончание поиска событий (YY-MM-dd h:m:s): ')
+
+        events_all = Interface._current_cal.find_all_events_at_time(Interface._current_user, time_start, time_end)
+
+        print(f'События для вас: {Interface._current_user} в период с {time_start} по {time_end}:')
 
         for event in events_all:
             print(event)
@@ -223,6 +230,7 @@ class Interface:
                 Interface._current_cal = Calendar(Interface._current_user)
 
                 Interface._current_cal.read_from_json(f"Calendars\\{user}_{dt.datetime.now().date()}.json")
+                # Interface._current_cal.read_from_json(f"Calendars\\Anton_2024-02-19.json")
 
                 if Interface._current_cal not in Interface._current_calendars:
                     Interface._current_calendars.append(Interface._current_cal)
@@ -238,14 +246,14 @@ class Interface:
             if y == 'y' or y == 'Y':
                 Interface.func_request.append(Interface.all_users())
 
-            Interface.func_request.append(Interface.login_user())
-            Interface.func_request.append(Interface.read())
+                Interface.func_request.append(Interface.login_user())
+                # Interface.func_request.append(Interface.read())
 
-        Interface.func_request.append(Interface.read())
+            Interface.func_request.append(Interface.read())
 
     @staticmethod
     def user_read():
-        ret = input(f"""{Interface.create_user()}'s меню:
+        ret = input(f"""{Interface._current_user}'s меню:
                                1. Создать событие
                                2. Удалить событие
                                3. Изменить событие
