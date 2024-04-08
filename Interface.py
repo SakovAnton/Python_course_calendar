@@ -14,6 +14,7 @@ from Backend import Backend
 from Calendar import Calendar
 import datetime as dt
 
+
 class Interface:
     state = 'start'
     func_request = list()
@@ -229,8 +230,11 @@ class Interface:
 
                 Interface._current_cal = Calendar(Interface._current_user)
 
-                Interface._current_cal.read_from_json(f"Calendars\\{user}_{dt.datetime.now().date()}.json")
-                # Interface._current_cal.read_from_json(f"Calendars\\Anton_2024-02-19.json")
+                try:
+                    Interface._current_cal.read_from_json(f"Calendars\\{user}_calendar.json")
+                except:
+                    print('Вы давно не заходили и календарь забыл все ваши события')
+                    # решение очень плохое, но времени писать проверку версии файла
 
                 if Interface._current_cal not in Interface._current_calendars:
                     Interface._current_calendars.append(Interface._current_cal)

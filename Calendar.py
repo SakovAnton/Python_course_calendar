@@ -12,7 +12,6 @@ import uuid
 
 
 class Calendar:
-
     _events_user = dict()
 
     def __init__(self, owner):
@@ -135,12 +134,13 @@ class Calendar:
         }
 
         print(to_json)
-        with open(f"Calendars\\{self._owner}_{dt.datetime.now().date()}.json", 'w') as f:
+        with open(f"Calendars\\{self._owner}_calendar.json", 'w') as f:
             f.write(json.dumps(to_json))
+        # with open(f"Calendars\\{self._owner}_{dt.datetime.now().date()}.json", 'w') as f:
+        #     f.write(json.dumps(to_json))
 
     # @staticmethod
     def read_from_json(self, file):
-
 
         try:
             with open(file, 'r') as f:
